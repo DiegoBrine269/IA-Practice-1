@@ -4,7 +4,11 @@ export class Celda {
       this.value = value;
     }
     
-    set color (color) {
+    setColor (color) {
       this.color = color;
+    }
+
+    set significado (significado) {
+      this.significado = significado;
     }
 }

@@ -77,9 +77,8 @@ document.addEventListener('DOMContentLoaded',  function () {
 //Valida el contenido del archivo
 function validarContenido(texto) {
     const regEx = /^([0-9]*\s*,\s*)*$/;
-    const valido = regEx.test(texto);
-
-    return valido;
+    
+    return regEx.test(texto);
 }
 
 function mostrarFormInfo(listaNumeros) {
@@ -89,7 +88,7 @@ function mostrarFormInfo(listaNumeros) {
     const listaValores = document.querySelector('#lista-valores');
     
     for(let valor of listaNumeros) {
-        const tr = document.createElement('tr');
+        const tr = document.createElement('tr'); 
         const tdValor = document.createElement('td');
         tdValor.innerText = valor;
 
@@ -104,7 +103,7 @@ function mostrarFormInfo(listaNumeros) {
         const inputSignificado = document.createElement('input');
         inputSignificado.type = 'text';
         inputSignificado.name = 'significado-' + valor;
-        inputSignificado.required = 'true';
+        // inputSignificado.required = 'true';
         tdSignificado.append(inputSignificado);
 
         tr.append(tdValor, tdColor, tdSignificado);
@@ -119,13 +118,20 @@ function mostrarFormInfo(listaNumeros) {
 
         // Guardando los colores y significados de cada celda
         for (const [key, value] of formData) {
-            
-            //Separar la cadena 
+
+            // console.log(key, value);
+
+            //color-1
             if(key.startsWith('color')){
-                
+
+                // console.log(value);
+                mapa.asignarColor(key.charAt(key.length - 1), value);
+                console.log(mapa.celdas);
             }
 
-            console.log(key, value);
+            // console.log(mapa.celdas);
+
+            // console.log(key, value);
             // mapa.celda([1, 'B'])
         }
     });

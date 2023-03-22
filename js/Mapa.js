@@ -1,8 +1,8 @@
 import { Celda } from "./Celda.js";
 
-export class Mapa extends Map {
+export class Mapa {
     constructor () {
-        super();
+        // super();
         this.celdas = [];
     }
 
@@ -10,6 +10,14 @@ export class Mapa extends Map {
         let c = new Celda(key, value)
         this.celdas.push(c);
         return c;
+    }
+
+    asignarColor(value, color) {
+        this.celdas.forEach((celda) => {
+            if(celda.value === value){
+                celda.setColor(color);
+            }
+        });
     }
 
     // Ejecutar este método para obtener una celda en especial, la key debe ser por ejemplo: [1, 'B']
