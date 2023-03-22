@@ -1,0 +1,23 @@
+import { Celda } from "./Celda.js";
+
+export class Mapa extends Map {
+    constructor () {
+        super();
+        this.celdas = [];
+    }
+
+    nuevaCelda(key, value){
+        let c = new Celda(key, value)
+        this.celdas.push(c);
+        return c;
+    }
+
+    // Ejecutar este método para obtener una celda en especial, la key debe ser por ejemplo: [1, 'B']
+    celda (key) {
+        return this.celdas.find(item => this.equalsCheck(item.key, key));
+    }
+
+    // Compara dos arreglos
+    equalsCheck = (a, b) => JSON.stringify(a) === JSON.stringify(b);
+    
+}
