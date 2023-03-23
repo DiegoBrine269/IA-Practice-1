@@ -20,6 +20,14 @@ export class Mapa {
         });
     }
 
+    asignarSignificado(value, significado) {
+        this.celdas.forEach((celda) => {
+            if(celda.value === value){
+                celda.setSignificado(significado);
+            }
+        });
+    }
+
     // Ejecutar este método para obtener una celda en especial, la key debe ser por ejemplo: [1, 'B']
     celda (key) {
         return this.celdas.find(item => this.equalsCheck(item.key, key));
@@ -27,5 +35,4 @@ export class Mapa {
 
     // Compara dos arreglos
     equalsCheck = (a, b) => JSON.stringify(a) === JSON.stringify(b);
-    
 }

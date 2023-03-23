@@ -8,7 +8,7 @@ export class Celda {
       this.color = color;
     }
 
-    set significado (significado) {
+    setSignificado (significado) {
       this.significado = significado;
     }
 }

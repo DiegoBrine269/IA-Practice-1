@@ -3,7 +3,10 @@ import { Mapa } from "./Mapa.js";
 let mapa;
 
 // Esta función se ejecuta una vez el HTML esté cargado al 100%
-document.addEventListener('DOMContentLoaded',  function () {
+document.addEventListener('DOMContentLoaded', index()); 
+
+//Función principal
+function index () {
     let texto;
     
     //Lectura del archivo
@@ -34,7 +37,7 @@ document.addEventListener('DOMContentLoaded',  function () {
             let letraColumna = 'A';
 
             // Separa en filas todo el archivo
-            const filas = texto.split(/\r?\n/)
+            const filas = texto.split(/\r?\n/);
             
             // De cada fila, tomar los dígitos separados por coma
             for (const fila of filas) {
@@ -55,8 +58,6 @@ document.addEventListener('DOMContentLoaded',  function () {
                         }
                     }
                 }
-                
-                // console.log(mapa.celdas);
                 letraColumna = 'A';
                 numFila ++;
             }
@@ -70,23 +71,25 @@ document.addEventListener('DOMContentLoaded',  function () {
             reader.readAsText(file);
         }        
     });
-}); 
+}
 
 // --- Declaración de funciones ---
 
-//Valida el contenido del archivo
+// Valida el contenido del archivo
 function validarContenido(texto) {
     const regEx = /^([0-9]*\s*,\s*)*$/;
     
     return regEx.test(texto);
 }
 
+// Muestra el formulario para pedir los datos de las celdas
 function mostrarFormInfo(listaNumeros) {
     const form = document.querySelector('#form-info-celdas');
     form.classList.toggle('d-none');
 
     const listaValores = document.querySelector('#lista-valores');
     
+    // DOM Scripting
     for(let valor of listaNumeros) {
         const tr = document.createElement('tr'); 
         const tdValor = document.createElement('td');
@@ -103,7 +106,7 @@ function mostrarFormInfo(listaNumeros) {
         const inputSignificado = document.createElement('input');
         inputSignificado.type = 'text';
         inputSignificado.name = 'significado-' + valor;
-        // inputSignificado.required = 'true';
+        inputSignificado.required = 'true';
         tdSignificado.append(inputSignificado);
 
         tr.append(tdValor, tdColor, tdSignificado);
@@ -119,20 +122,14 @@ function mostrarFormInfo(listaNumeros) {
         // Guardando los colores y significados de cada celda
         for (const [key, value] of formData) {
 
-            // console.log(key, value);
-
-            //color-1
-            if(key.startsWith('color')){
-
-                // console.log(value);
+            //Cambia el atributo color de todas las celdas que tengan el mismo valor
+            if(key.startsWith('color'))
                 mapa.asignarColor(key.charAt(key.length - 1), value);
-                console.log(mapa.celdas);
-            }
 
-            // console.log(mapa.celdas);
-
-            // console.log(key, value);
-            // mapa.celda([1, 'B'])
+            //Cambia el atributo descripción de todas las celdas que tengan el mismo valor
+            else if(key.startsWith('significado'))
+                mapa.asignarSignificado(key.charAt(key.length - 1), value);
+            
         }
     });
 }
