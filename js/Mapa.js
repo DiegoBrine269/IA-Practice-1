@@ -2,8 +2,9 @@ import { Celda } from "./Celda.js";
 
 
 export class Mapa {
-    constructor () {
+    constructor (colorAgente) {
         this.celdas = new Array();
+        this.colorAgente = colorAgente;
     }
 
     // Crea una nueva celda y la agrega al mapa
@@ -132,8 +133,9 @@ export class Mapa {
     equalsCheck = (a, b) => JSON.stringify(a) === JSON.stringify(b);   
 
     //Elimina todo el contenido del lienzo y redibuja en este básandose en la información guardada en los objetos
-    dibujar(ctx) {
-        // ctx.clearRect(0, 0, canvas.width, canvas.height);
+    dibujar(canvas) {
+        let ctx = canvas.getContext("2d");
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
         ctx.beginPath();
         
         ctx.fillStyle = '#000000';
@@ -145,6 +147,7 @@ export class Mapa {
         const numCols = this.numCols();
 
         let tamano = 50;
+        let mitad = tamano / 2;
 
         // Dibujando el perímetro vertical que indica el número de fila 
         for(let i=1; i<=numFilas; i++) {
@@ -175,8 +178,14 @@ export class Mapa {
                 ctx.fillText("F", tamano*numCol+10, tamano*numFila+25);
             if(celda.visitado)
                 ctx.fillText("V", tamano*numCol+20, tamano*numFila+25);
-            if(celda.actual)
+            if(celda.actual){
                 ctx.fillText("X", tamano*numCol+31, tamano*numFila+25);
+                ctx.fillStyle = this.colorAgente;
+                ctx.beginPath();
+                ctx.arc(tamano*numCol+mitad, tamano*numFila+mitad, 10, 0, 2 * Math.PI);
+                ctx.closePath();
+                ctx.fill();
+            }
             if(celda.decision)
                 ctx.fillText("O", tamano*numCol+44, tamano*numFila+25);
             

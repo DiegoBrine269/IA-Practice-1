@@ -1,11 +1,13 @@
-import { Mapa } from "./Mapa.js";
 
-let mapa;
+import { Agente } from "./Agente.js";
+
+let agente;
 
 let canvas = document.querySelector('#lienzo');
 canvas.width = window.innerWidth;
 let heightRatio = 1.5;
 canvas.height = canvas.width * heightRatio;
+
 
 // Esta función se ejecuta una vez el HTML esté cargado al 100%
 document.addEventListener('DOMContentLoaded', index()); 
@@ -27,12 +29,19 @@ function index () {
 
             // Validación del texto
             if(!validarContenido(texto)) {
-                alert('Error');
+                alert('Error con el contenido del archivo');
                 return;
             }
 
-            // Se instancia el mapa y se comienzan a guardar los datos
-            mapa = new Mapa();
+            // Se instancia el agente y se comienzan a guardar los datos
+            let matrizCosto = {
+                '0' : Infinity,
+                '1' : 2,
+                '2' : 4,
+                '3' : 3,
+                '4' : 1,
+            }
+            agente = new Agente('Monkey', '#400109', matrizCosto);
 
             //Lista de todos los números diferentes que se presenten en el archivo
             let listaNumeros = []; 
@@ -52,7 +61,7 @@ function index () {
                 for(let numero of numeros) {
                     numero = numero.trim();
                     if(numero !== ''){
-                        mapa.nuevaCelda([numFila, letraColumna], numero);
+                        agente.mapa.nuevaCelda([numFila, letraColumna], numero);
                         
                         //Siguiente letra
                         letraColumna = String.fromCharCode(letraColumna.charCodeAt(0) + 1);
@@ -128,11 +137,11 @@ function mostrarFormInfo(listaNumeros) {
         for (const [key, value] of formData) {
             //Cambia el atributo color de todas las celdas que tengan el mismo valor
             if(key.startsWith('color'))
-                mapa.asignarColor(key.charAt(key.length - 1), value);
+                agente.mapa.asignarColor(key.charAt(key.length - 1), value);
 
             //Cambia el atributo descripción de todas las celdas que tengan el mismo valor
             else if(key.startsWith('significado'))
-                mapa.asignarSignificado(key.charAt(key.length - 1), value);
+                agente.mapa.asignarSignificado(key.charAt(key.length - 1), value);
         }
 
         form.classList.toggle('d-none');
@@ -160,15 +169,14 @@ function mostrarFormInfo(listaNumeros) {
             const keyInicial = [parseInt(selectCeldaInicial.value[0]), selectCeldaInicial.value[1]];
             const keyFinal = [parseInt(selectCeldaFinal.value[0]), selectCeldaFinal.value[1]];
             
-            console.log(keyInicial, keyFinal);
-
-            mapa.setInicial(keyInicial);
-            mapa.setFinal(keyFinal);
+            agente.mapa.setInicial(keyInicial);
+            agente.mapa.setFinal(keyFinal);
+            agente.mapa.setActual(keyInicial);
             
             form.classList.toggle('d-none');
 
-            let ctx = canvas.getContext("2d");
-            mapa.dibujar(ctx);
+
+            agente.mapa.dibujar(canvas);
 
             mostrarFormOcultarCelda();
         })
@@ -187,19 +195,46 @@ function mostrarFormInfo(listaNumeros) {
 
             const key = [parseInt(selectCeldaOcultar.value[0]), selectCeldaOcultar.value[1]];
 
-            mapa.setInvisible(key);
-            let ctx = canvas.getContext("2d");
-            mapa.dibujar(ctx);
-        })
+            agente.mapa.setInvisible(key);
+            agente.mapa.dibujar(canvas);
+
+        });
+        // Event Listener para cuando se presionan las teclas de flechas
+        document.onkeydown = listenerTeclas;
 
     }
+
+    function listenerTeclas (e) {
+
+            e = e || window.event;
+            e.preventDefault();
+
+            // up arrow
+            if (e.keyCode == '38') {
+                agente.moverse(0);
+                agente.mapa.dibujar(canvas);
+            }
+            // down arrow
+            else if (e.keyCode == '40') {
+                agente.moverse(2);
+                agente.mapa.dibujar(canvas);
+            }
+            // left arrow
+            else if (e.keyCode == '37') {
+
+            }
+            // right arrow
+            else if (e.keyCode == '39') {
+
+            }
+
+        }
+    
 
 
     // Lllena un select con todos las keys de celda
     function llenarSelect(select) {
-        mapa.celdas.map((celda) => {
-            console.log(celda.key);
-    
+        agente.mapa.celdas.map((celda) => {    
             const key = celda.key[0] + celda.key[1];
     
             const option1 = document.createElement('option');
