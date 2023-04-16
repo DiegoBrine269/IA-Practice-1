@@ -2,6 +2,11 @@ import { Mapa } from "./Mapa.js";
 
 let mapa;
 
+let canvas = document.querySelector('#lienzo');
+canvas.width = window.innerWidth;
+let heightRatio = 1.5;
+canvas.height = canvas.width * heightRatio;
+
 // Esta función se ejecuta una vez el HTML esté cargado al 100%
 document.addEventListener('DOMContentLoaded', index()); 
 
@@ -106,7 +111,7 @@ function mostrarFormInfo(listaNumeros) {
         const inputSignificado = document.createElement('input');
         inputSignificado.type = 'text';
         inputSignificado.name = 'significado-' + valor;
-        inputSignificado.required = 'true';
+        // inputSignificado.required = 'true';
         tdSignificado.append(inputSignificado);
 
         tr.append(tdValor, tdColor, tdSignificado);
@@ -121,7 +126,6 @@ function mostrarFormInfo(listaNumeros) {
 
         // Guardando los colores y significados de cada celda
         for (const [key, value] of formData) {
-
             //Cambia el atributo color de todas las celdas que tengan el mismo valor
             if(key.startsWith('color'))
                 mapa.asignarColor(key.charAt(key.length - 1), value);
@@ -129,12 +133,81 @@ function mostrarFormInfo(listaNumeros) {
             //Cambia el atributo descripción de todas las celdas que tengan el mismo valor
             else if(key.startsWith('significado'))
                 mapa.asignarSignificado(key.charAt(key.length - 1), value);
-            
         }
+
+        form.classList.toggle('d-none');
+
+        
+        mostrarFormDetalles();
+        
     });
-}
+    
 
-//Elimina todo el contenido del lienzo y redibuja en este básandose en la información guardada en los objetos
-function dibujar() {
+    // Muestra el form para pedir la celda inicial, la celda final
+    function mostrarFormDetalles() {
+        const form = document.querySelector('#form-detalles');
+        form.classList.toggle('d-none');
+        
+        const selectCeldaInicial = document.querySelector('#celda-inicial');
+        const selectCeldaFinal = document.querySelector('#celda-final');
 
+        llenarSelect(selectCeldaInicial);
+        llenarSelect(selectCeldaFinal);
+
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const keyInicial = [parseInt(selectCeldaInicial.value[0]), selectCeldaInicial.value[1]];
+            const keyFinal = [parseInt(selectCeldaFinal.value[0]), selectCeldaFinal.value[1]];
+            
+            console.log(keyInicial, keyFinal);
+
+            mapa.setInicial(keyInicial);
+            mapa.setFinal(keyFinal);
+            
+            form.classList.toggle('d-none');
+
+            let ctx = canvas.getContext("2d");
+            mapa.dibujar(ctx);
+
+            mostrarFormOcultarCelda();
+        })
+    }
+
+    function mostrarFormOcultarCelda (){
+        const form = document.querySelector('#form-esconder-celda');
+        form.classList.toggle('d-none');
+
+        const selectCeldaOcultar = document.querySelector('#celda-a-ocultar');
+
+        llenarSelect(selectCeldaOcultar);
+
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const key = [parseInt(selectCeldaOcultar.value[0]), selectCeldaOcultar.value[1]];
+
+            mapa.setInvisible(key);
+            let ctx = canvas.getContext("2d");
+            mapa.dibujar(ctx);
+        })
+
+    }
+
+
+    // Lllena un select con todos las keys de celda
+    function llenarSelect(select) {
+        mapa.celdas.map((celda) => {
+            console.log(celda.key);
+    
+            const key = celda.key[0] + celda.key[1];
+    
+            const option1 = document.createElement('option');
+            option1.value = key;
+            option1.innerText = key;
+            
+            select.append(option1);
+        });
+
+    }
 }
