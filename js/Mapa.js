@@ -35,7 +35,7 @@ export class Mapa {
     }
 
     // Asigna el atributo color a cada celda dado un valor
-    asignarColor(value, color) {
+    setColor(value, color) {
         this.celdas.forEach((celda) => {
             if(celda.value === value){
                 celda.setColor(color);
@@ -44,7 +44,7 @@ export class Mapa {
     }
 
     // Asigna el atributo significado a cada celda dado un valor
-    asignarSignificado(value, significado) {
+    setSignificado(value, significado) {
         this.celdas.forEach((celda) => {
             if(celda.value === value){
                 celda.setSignificado(significado);
@@ -52,13 +52,24 @@ export class Mapa {
         });
     }
 
+    // Asigna el valor que le cuesta moverse a esta celda al agente
+    setCosto (value, costo) {
+        this.celdas.forEach((celda) => {            
+            if(celda.value == value)
+                celda.setCosto(costo);
+            
+        });
+    } 
+
     // Ejecutar este método para obtener una celda en especial, la key debe ser por ejemplo: [1, 'B']
     celda (key) {
         return this.celdas.find(item => this.equalsCheck(item.key, key));
     }
 
+
     // Establece una celda como la actual
     setActual (key) {
+        // debugger;
         this.celdas.forEach((celda) => {            
             celda.actual = false;
 

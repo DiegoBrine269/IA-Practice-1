@@ -16,7 +16,7 @@
                 <h1>Inteligencia Artificial | Práctica 1</h1>
             </div>
 
-            <div>
+            <div id="form-cargar-archivo">
                 <label for="file-selector" class="d-inline">Cargue un archivo .txt :</label>
                 <input type="file" id="file-selector">
             </div>
@@ -58,17 +58,26 @@
 
             <form id="form-esconder-celda" class="my-3 d-none"> 
                 <h4>Esconder celda</h4>
-                <div class="row mb-3">
-                    <select class="form-select" id="celda-a-ocultar" aria-label="Floating label select example"  required>
-                        <option selected disabled value="">Celda a ocultar</option>
-                    </select>
+                <div class="mb-3">
+                    <div class="col-sm-5">
+                        <select class="form-select" id="celda-a-ocultar" aria-label="Floating label select example"  required>
+                            <option selected disabled value="">Celda a ocultar</option>
+                        </select>
+                    </div>
+
+                    <div class="col-sm-5">
+                        <input class="btn btn-primary btn-sm" type="submit" value="Ocultar">
+                    </div>
                 </div>
-                <input class="btn btn-primary" type="submit" value="Guardar">
             </form>
         </div>
 
         
-        <div class="container">
+        <div class="container mt-5">
+            <div class="d-none" id="info-movimiento">
+                <h6>Número de movimientos <span class="badge bg-secondary" id="num-movs"></span></h6>
+                <h6>Costo <span class="badge bg-secondary" id="costo-total"></span></h6>
+            </div>
             <canvas id="lienzo">
             </canvas>
         </div>

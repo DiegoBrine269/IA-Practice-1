@@ -9,11 +9,17 @@ export class Celda {
       this.color = color;
       return this;
     }
-  
+    
     setSignificado (significado) {
       this.significado = significado;
       return this;
     }
+
+    setCosto (costo) {
+      this.costo = costo;
+      return this;
+    }
+
     setInicial (inicial = false) {
       this.inicial = inicial;
       return this;

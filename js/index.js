@@ -1,5 +1,6 @@
 
-import { Agente } from "./Agente.js";
+import { Agente } from "./Agente/Agente.js";
+import { Chango } from "./Agente/Chango.js";
 
 let agente;
 
@@ -7,6 +8,7 @@ let canvas = document.querySelector('#lienzo');
 canvas.width = window.innerWidth;
 let heightRatio = 1.5;
 canvas.height = canvas.width * heightRatio;
+
 
 
 // Esta función se ejecuta una vez el HTML esté cargado al 100%
@@ -33,15 +35,8 @@ function index () {
                 return;
             }
 
-            // Se instancia el agente y se comienzan a guardar los datos
-            let matrizCosto = {
-                '0' : Infinity,
-                '1' : 2,
-                '2' : 4,
-                '3' : 3,
-                '4' : 1,
-            }
-            agente = new Agente('Monkey', '#400109', matrizCosto);
+            // Se instancía el agente y se comienzan a guardar los datos
+            agente = new Chango('Bob', '#400109');
 
             //Lista de todos los números diferentes que se presenten en el archivo
             let listaNumeros = []; 
@@ -76,6 +71,7 @@ function index () {
                 numFila ++;
             }
 
+            document.querySelector('#form-cargar-archivo').classList.toggle('d-none');
             // Mostrar formulario para pedir la información del mapa
             mostrarFormInfo(listaNumeros);
 
@@ -105,7 +101,7 @@ function mostrarFormInfo(listaNumeros) {
     
     // DOM Scripting
     for(let valor of listaNumeros) {
-        const tr = document.createElement('tr'); 
+        const tr = document.createElement('tr');  
         const tdValor = document.createElement('td');
         tdValor.innerText = valor;
 
@@ -137,16 +133,15 @@ function mostrarFormInfo(listaNumeros) {
         for (const [key, value] of formData) {
             //Cambia el atributo color de todas las celdas que tengan el mismo valor
             if(key.startsWith('color'))
-                agente.mapa.asignarColor(key.charAt(key.length - 1), value);
+                agente.mapa.setColor(key.charAt(key.length - 1), value);
 
             //Cambia el atributo descripción de todas las celdas que tengan el mismo valor
             else if(key.startsWith('significado'))
-                agente.mapa.asignarSignificado(key.charAt(key.length - 1), value);
+                agente.mapa.setSignificado(key.charAt(key.length - 1), value);
         }
 
         form.classList.toggle('d-none');
 
-        
         mostrarFormDetalles();
         
     });
@@ -175,16 +170,17 @@ function mostrarFormInfo(listaNumeros) {
             
             form.classList.toggle('d-none');
 
-
             agente.mapa.dibujar(canvas);
 
             mostrarFormOcultarCelda();
-        })
+        });
     }
 
     function mostrarFormOcultarCelda (){
         const form = document.querySelector('#form-esconder-celda');
         form.classList.toggle('d-none');
+
+        document.querySelector('#info-movimiento').classList.toggle('d-none');
 
         const selectCeldaOcultar = document.querySelector('#celda-a-ocultar');
 
@@ -199,36 +195,47 @@ function mostrarFormInfo(listaNumeros) {
             agente.mapa.dibujar(canvas);
 
         });
+
         // Event Listener para cuando se presionan las teclas de flechas
         document.onkeydown = listenerTeclas;
 
     }
 
     function listenerTeclas (e) {
+        e = e || window.event;
+        e.preventDefault();
 
-            e = e || window.event;
-            e.preventDefault();
+        // Verificando que se haya presionado una flecha
+        if(![38, 39, 40, 37].includes(e.keyCode))
+            return;
 
-            // up arrow
-            if (e.keyCode == '38') {
-                agente.moverse(0);
-                agente.mapa.dibujar(canvas);
-            }
-            // down arrow
-            else if (e.keyCode == '40') {
-                agente.moverse(2);
-                agente.mapa.dibujar(canvas);
-            }
-            // left arrow
-            else if (e.keyCode == '37') {
-
-            }
-            // right arrow
-            else if (e.keyCode == '39') {
-
-            }
-
+        // up arrow
+        if (e.keyCode == '38') {
+            agente.moverse(0);
+            agente.mapa.dibujar(canvas);
         }
+        // right arrow
+        else if (e.keyCode == '39') {
+            agente.moverse(1);
+            agente.mapa.dibujar(canvas);
+        }
+        // down arrow
+        else if (e.keyCode == '40') {
+            agente.moverse(2);
+            agente.mapa.dibujar(canvas);
+        }
+        // left arrow
+        else if (e.keyCode == '37') {
+            agente.moverse(3);
+            agente.mapa.dibujar(canvas);
+        }
+
+        document.querySelector('#num-movs').innerText = agente.numMovimientos;
+        document.querySelector('#costo-total').innerText = agente.costoTotal;
+
+        if(agente.mapa.getActual === agente.mapa.getFinal)
+            alert('Has llegado');
+    }
     
 
 
@@ -237,7 +244,7 @@ function mostrarFormInfo(listaNumeros) {
         agente.mapa.celdas.map((celda) => {    
             const key = celda.key[0] + celda.key[1];
     
-            const option1 = document.createElement('option');
+            const option1 = document.createElement('option'); 
             option1.value = key;
             option1.innerText = key;
             
