@@ -155,6 +155,7 @@ function mostrarFormInfo(listaNumeros) {
         const selectCeldaInicial = document.querySelector('#celda-inicial');
         const selectCeldaFinal = document.querySelector('#celda-final');
 
+
         llenarSelect(selectCeldaInicial);
         llenarSelect(selectCeldaFinal);
 
@@ -196,8 +197,17 @@ function mostrarFormInfo(listaNumeros) {
 
         });
 
+
+        // Mostrando botón de A*
+        const btnCalcularA = document.querySelector('#btn-calcularA')
+        btnCalcularA.classList.toggle('d-none');
+
+        btnCalcularA.addEventListener('click', function() {
+            agente.estrella();
+        })
+
         // Event Listener para cuando se presionan las teclas de flechas
-        document.onkeydown = listenerTeclas;
+        //document.onkeydown = listenerTeclas;
 
     }
 
@@ -252,4 +262,5 @@ function mostrarFormInfo(listaNumeros) {
         });
 
     }
+
 }

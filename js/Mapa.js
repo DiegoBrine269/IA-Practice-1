@@ -143,6 +143,14 @@ export class Mapa {
     // Compara dos arreglos
     equalsCheck = (a, b) => JSON.stringify(a) === JSON.stringify(b);   
 
+    //Obtiene la distancia Manhattan entre dos celdas
+    getDistancia(celda1, celda2){
+        const distanciaVertical = Math.abs(celda1.key[0] - celda2.key[0]);
+        const distanciaHorizontal = Math.abs(celda1.key[1].charCodeAt(0) - celda2.key[1].charCodeAt(0));
+        
+        return distanciaVertical + distanciaHorizontal;
+    }
+
     //Elimina todo el contenido del lienzo y redibuja en este básandose en la información guardada en los objetos
     dibujar(canvas) {
         let ctx = canvas.getContext("2d");
