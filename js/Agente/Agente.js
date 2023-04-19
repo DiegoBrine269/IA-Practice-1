@@ -93,6 +93,7 @@ export class Agente {
         if(this.sensar(3) != undefined)
             opcionesDeCamino++;
 
+
         switch(direccion) {
             case 0:
                 // Validando que exista un camino
@@ -146,6 +147,13 @@ export class Agente {
 
         this.mapa.setVisitado(key);
         this.mapa.setActual(key);
+
+        // Añadiendo visibilidad a las celdas adyacentes
+        const celdasAdyacentes = [this.sensar(0), this.sensar(1), this.sensar(2), this.sensar(3)];
+        celdasAdyacentes.forEach(celda => {
+            if(celda !== undefined)
+                celda.invisible = false;
+        });
         
         if(opcionesDeCamino > 1)
             this.mapa.setDecision(keyAnterior);

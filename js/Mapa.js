@@ -121,7 +121,6 @@ export class Mapa {
         this.celdas.forEach((celda) => {            
             if(this.equalsCheck(celda.key, key)){
                 celda.setInvisible(true);
-                celda.setColor('#000000');
             }
             
         });
@@ -153,7 +152,6 @@ export class Mapa {
         ctx.font = "30px Arial";
         ctx.textAlign = "center";
 
-
         const numFilas = this.numFilas();
         const numCols = this.numCols();
 
@@ -178,7 +176,7 @@ export class Mapa {
         this.celdas.map((celda) => {
             const numCol = celda.key[1].charCodeAt(0) - 64;
             const numFila = celda.key[0];
-            ctx.fillStyle = celda.color;
+            ctx.fillStyle = celda.invisible === true ? '#000000' : celda.color;
             ctx.fillRect(tamano*numCol, tamano*numFila, tamano, tamano);
             ctx.font = "20px Arial";
             ctx.fillStyle = '#A8A8A8';
@@ -199,8 +197,6 @@ export class Mapa {
             }
             if(celda.decision)
                 ctx.fillText("O", tamano*numCol+44, tamano*numFila+25);
-            
-
         });
 
         ctx.stroke();
