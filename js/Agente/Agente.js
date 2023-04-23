@@ -173,31 +173,46 @@ export class Agente {
         let visitados=[];
         let cola = [];
         let padres = [];
+        let key=Object.assign([],this.mapa.getActual().key);
         // Añadir el nodo inicial a la cola
         cola.push(inicio);
-        visitados=[];
+        let i=0;
+        let x;
         const celdasAdyacentes = [this.sensar(0), this.sensar(1), this.sensar(2), this.sensar(3)];
         // Mientras haya nodos en la cola, expandirlos
+        let mover=[this.moverseBusqueda(0,key),this.moverseBusqueda(1,key),
+                    this.moverseBusqueda(2,key),this.moverseBusqueda(3,key)];
+        /*while(cola.length>0) {
+            let actual=cola.shift();
+            console.log("Nodo trabajado",actual);
 
+            for (i=0;i<4;i++){
+                let adyacente=moverse[i];
+                if (adyacente!==undefined){
+                    if (!visitados.includes(adyacente)) {
+                        visitados.push(adyacente);
+                        cola.push(adyacente);
+                        padres[adyacente]=actual;
 
-        for (let i=0;i<4;i++){
-            console.log(celdasAdyacentes[i]);
-            console.log(this.moverseBusqueda(i));
-
+                    }
+                }
             }
+        }
+        console.log(visitados);
+        console.log(padres);*/
+
     }
-    moverseBusqueda(direccion) {
-        const key = Object.assign([], this.mapa.getActual().key);
+    moverseBusqueda(direccion,key) {
+
         let celdaResultante;
         let filas=this.mapa.numFilas();
         let columnas=this.mapa.numCols();
         const ultimaLetra = 64 + columnas;
 
-
         switch (direccion) {
             case 0://Arriba
                 celdaResultante=this.sensar(0);
-                if ( celdaResultante == undefined || celdaResultante.costo == Infinity){
+                if ( celdaResultante === undefined || celdaResultante.costo === Infinity){
                     return undefined;
                 }else{
                     if (key[0]>1) {
@@ -208,10 +223,9 @@ export class Agente {
                 break;
             case 1://Derecha
                 celdaResultante=this.sensar(1);
-                if (celdaResultante==undefined||celdaResultante.costo==Infinity){
+                if (celdaResultante===undefined||celdaResultante.costo===Infinity){
                     return undefined;
                 }else{
-
                     if (key[1].charCodeAt(0) < ultimaLetra) {
                         key[1] = String.fromCharCode(key[1].charCodeAt(0) + 1);
                     }
@@ -221,22 +235,22 @@ export class Agente {
                 break;
             case 2://Abajo
                 celdaResultante=this.sensar(2);
-                if (celdaResultante==undefined||celdaResultante.costo==Infinity){
+                if (celdaResultante===undefined||celdaResultante.costo===Infinity){
                     return undefined;
                 }else{
                     if (key[0]<filas) {
-                        key[0]++;
+                       key[0]++;
                     }
                     return key;
                 }
                 break;
             case 3://Izquierda
                 celdaResultante=this.sensar(3);
-                if (celdaResultante==undefined||celdaResultante.costo==Infinity) {
+                if (celdaResultante===undefined||celdaResultante.costo===Infinity) {
                     return undefined;
                 }else {
                     if (key[1].charCodeAt(0) > 65) {
-                        key[1] = String.fromCharCode(key[1].charCodeAt(0) - 1);
+                       key[1] = String.fromCharCode(key[1].charCodeAt(0) - 1);
                     }
                     return key;
                 }
