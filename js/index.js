@@ -3,7 +3,6 @@ import { Agente } from "./Agente/Agente.js";
 import { Chango } from "./Agente/Chango.js";
 
 let agente;
-
 let canvas = document.querySelector('#lienzo');
 canvas.width = window.innerWidth;
 let heightRatio = 1.5;
@@ -175,7 +174,13 @@ function mostrarFormInfo(listaNumeros) {
             mostrarFormOcultarCelda();
         });
     }
+    /*Boton para  busqueda por anchura*/
+    const btnCalcularAnchura = document.querySelector('#btn-calcularAnch')
+    btnCalcularAnchura.classList.toggle('d-none');
 
+    btnCalcularAnchura.addEventListener('click', function() {
+        agente.Anchura();
+    })
     function mostrarFormOcultarCelda (){
         const form = document.querySelector('#form-esconder-celda');
         form.classList.toggle('d-none');

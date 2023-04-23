@@ -62,5 +62,8 @@ export class Celda {
     getActual () {
       return this.actual;
     }
+    getInicial(){
+        return this.inicial;
+    }
 
 }
