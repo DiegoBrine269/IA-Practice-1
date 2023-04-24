@@ -1,4 +1,8 @@
 import {Mapa} from '../Mapa.js';
+let canvas = document.querySelector('#lienzo');
+canvas.width = window.innerWidth;
+let heightRatio = 1.5;
+canvas.height = canvas.width * heightRatio;
 
 export class Agente {
     constructor(nombre, color, matrizCosto) {
@@ -163,18 +167,40 @@ export class Agente {
     }
     Anchura(){
         const key=Object.assign([],this.mapa.getActual().key);
-        const inicial=this.mapa.getInicial();
-        let izquierda=[this.sensar(0),this.sensar(1),this.sensar(2),this.sensar(3)];
-        let iz=izquierda.key;
-        let celda=this.mapa.celda(key).key;
-        celda[0]++;
-        console.log(celda);
-        celda[0]--;
+        const final=this.mapa.getFinal();
+        let celda=this.mapa.celda(key);
+        for (let i=0;i<4;i++){
+            this.moverseBusqueda(i);
 
+            for (let j=0;j<4;j++) {
+                    console.log("Sensado en la direccion", j, ":", this.sensar(j));
 
+            }
+        }
 
     }
+    moverseBusqueda(direccion){
 
+        if (direccion===0){
+            this.moverse(0);
+            this.mapa.dibujar(canvas);
+        }
+
+        if (direccion===1){
+            this.moverse(1);
+            this.mapa.dibujar(canvas);
+        }
+
+        if (direccion===2){
+            this.moverse(2);
+            this.mapa.dibujar(canvas);
+        }
+        if (direccion===3){
+            this.moverse(3);
+            this.mapa.dibujar(canvas);
+        }
+    }
+/*No se ocupa, pero podria reciclarse algo
     moverseBusqueda(direccion,celda) {
 
         let celdaResultante;
@@ -232,5 +258,5 @@ export class Agente {
                 break;
         }
     }
-
+*/
 }
