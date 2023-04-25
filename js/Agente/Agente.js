@@ -20,7 +20,7 @@ export class Agente {
         
         const key = Object.assign([], this.mapa.getActual().key);
         let celda;
-
+        
         switch(direccion) {
             case 0:
                 if(key[0] === 1)
@@ -155,111 +155,127 @@ export class Agente {
     }
     // Búsqueda A*
     estrella(){
-
-        let ruta = []; // [[4,F], [5,G], [6,G]]
-        let movimientos = []; // [0, 1, 1, 1, 2, 3, 0]
-       
-        let nodosAbiertos = [];
-        let nodosCerrados = [];
-        let nodoActual = this.mapa.getActual();
-        const celdaFinal = this.mapa.getFinal();
         
+        // conjunto de nodos por explorar (Se agrega el inicial)
+        let nodosAbiertos = new Set([this.mapa.getInicial()]);
+        const destino = this.mapa.getFinal();
+
+        // conjunto de nodos ya explorados
+        const cerrados = new Set();
+
+        const movimientos = new Set();
+        const ruta = new Set();
+        let distancias = [];
+        let sigCelda = {};
+        let actual;
         
-        // Obteniendo la celda final, inicial y actual de la clase mapa
-        /*
-            nodo = {
-                ID: 12H
-                D(A, M) = 4
-                C = 2
-                h = D + c
-            }
-
-        */
-        const nodoFinal= {
-                id : this.mapa.getFinal().key, // [4, 'F']
-                // d  : this.mapa.getDistancia(celdaActual, celdaFinal),
-                // c  : 0
-        }
-        // nodoFinal.h = d + c;
-
-        const nodoInicial = {
-            id : this.mapa.getFinal().key, // [4, 'F']
-            d  : this.mapa.getDistancia(celdaActual, celdaFinal),
-            c  : 0
-        }
-        nodoInicial.h = d + c;    
-
-
-        nodosAbiertos.push(nodoInicial);
-        // Sensar en sentido de las manecillas del reloj 
-        while(celdaActual =! celdaFinal){
-            //Arriba
-            if(Agente.sensar(0) != undefined){
-                nodosAbiertos.push(Agente.sensar(0)); 
-
-            }
-            // Derecha
-            if(Agente.sensar(1) != undefined){
-                nodosAbiertos.push(Agente.sensar(1));
-            }
-            // Abajo
+        debugger;
+        // mientras hayan nodos por explorar
+        while (nodosAbiertos.size > 0) {
+            // encuentra el nodo con el costo f más bajo
+            if(actual == null)
+                for (const nodo of nodosAbiertos) {
+                    if (!actual || nodosAbiertos.valor < actual.valor) {
+                        actual = nodo;
+                    }
+                }
+            else
+                actual = nodosAbiertos.sigId;
             
-            if(Agente.sensar(0) != undefined){
-                nodosAbiertos.push(Agente.sensar(2)); 
 
+            // si encontramos el nodo de destino, reconstruimos el camino
+            if (actual === destino) {
+                const camino = [actual];
+                while (actual.padre) {
+                    camino.push(actual.padre);
+                    actual = actual.padre;
+                }
+                camino.reverse();
+                return camino;
             }
-            // Izquierda
-            if(Agente.sensar(0) != undefined){
-                nodosAbiertos.push(Agente.sensar(3));
+            // for (let i = nodosAbiertos.length - 1; i >= 0; i--) {
+                //     if (nodosAbiertos[i] === actual.key) {
+                    //       nodosAbiertos.splice(i, 1);
+                    //     }
+                    //   }
+                    
+                    
+            // mueve el nodo actual del conjunto de nodosAbiertos al conjunto de cerrados
+            nodosAbiertos.delete(actual);
+            cerrados.add(actual);
 
+            // para cada nodo abierto
+            
+            // Sensar arriba    
+            if(this.sensar(0) != undefined){                    
+                nodosAbiertos.add(this.sensar(0));
+                distancias.push(this.rellenarH(this.sensar(0), destino));
             }
-            celdaActual = selectLowestH(nodosAbiertos, celdaActual, celdaFinal);
 
+            // Sensar derecha
+            if(this.sensar(1) != undefined){                    
+                nodosAbiertos.add(this.sensar(1));
+                distancias.push(this.rellenarH(this.sensar(1), destino));
+            }
+
+            // Sensar abajo
+            if(this.sensar(2) != undefined){                    
+                nodosAbiertos.add(this.sensar(2));
+                distancias.push(this.rellenarH(this.sensar(2), destino));
+            }
+
+            // Sensar izquierda
+            if(this.sensar(3) != undefined){                    
+                nodosAbiertos.add(this.sensar(3));
+                distancias.push(this.rellenarH(this.sensar(3), destino));
+            }
+            
+            sigCelda.key = this.obtenerMejorEvaluacion(nodosAbiertos, distancias);
+            this.mapa.setActual(sigCelda.key[0]); 
         }
-
-        // Ya encontramos la ruta, ahora a mover al mono
-        /*
-            movimientos.foreach(direccion => {
-                setTimeout(() => {
-                    this.mover(direccion);
-                }, 1000);
-            });
-        */
-       
     }
 
-    // De los nodos abiertos, se selcciona la celda el nodo con menor valor en H
-    selectLowestH(abiertos, celdaActual, nodoFinal){
-        let h = [];
-        let auxH = [];
-
-        let menorH = {
-            nodoPadre: celdaActual.key,
-            id : undefined,
-            numero : undefined, 
-            mov : undefined,
-            h : undefined,
-            c : undefined
-        }
-        // Guardando distancias en auxH
-        distancia = getDistancia(abiertos, nodoFinal);
-        abiertos.forEach(distancia => auxH.push(distancia));
+    // Distancia de una celda a la final
+    rellenarH(opcionDeCelda, celdaFinal){       
+        let distancia;   
+        distancia = this.mapa.getDistancia(opcionDeCelda, celdaFinal) + opcionDeCelda.costo;
+        return distancia;       
         
-        // Comparar distancias en auxH para sacar la menor junto a su movimiento (0, 1, 2, 3)
-        menorH.numero = auxH[0];
-
-        for(i = 0; i < auxH.length; i++ ){
-            if(auxH[i] < menor){                
-                menorH.numero = aux[i];
-                menorH.mov = i;
-                menorH.id = abiertos.key[i];
-            
-            }
-        }       
-
-        return menorH;        
-
     }
+        
+        // De los nodos sensados, se selcciona el nodo con menor valor en H
+    obtenerMejorEvaluacion(nodos, h){
+        
+        // Comparar valores en nodos
+        debugger;
+        let counter;
+        let menor = h[0];
+        
+        // for (const numero of nodos) {
+        //     if (numero < menor) {
+        //         menor = numero; // Actualiza el valor mínimo si el elemento actual es menor que el valor actual de 'min'
+        //     }
+        // }
 
+        // for (const elemento of nodos) {
+           
+        // } 
+        // 4,3,6,5
+        for(counter = 0; counter < nodos.size+1; counter++){
+            if(nodos.sigId == undefined){
+                nodos.sigId = this.sensar(counter);
+                nodos.movimiento = counter;
+                nodos.valor = h[counter];
+            
+                if(h[counter] < nodos.valor){
+                    nodos.sigId = this.sensar(counter);
+                    nodos.valor = h[counter];
+                    nodos.movimiento = counter;
+                }
+            }
+        
+        }
 
+        return nodos;          
+    }         
 }
