@@ -181,6 +181,12 @@ function mostrarFormInfo(listaNumeros) {
     btnCalcularAnchura.addEventListener('click', function() {
         agente.Anchura();
     })
+    const btnCalcularProfundidad = document.querySelector('#btn-calcularProf')
+    btnCalcularProfundidad.classList.toggle('d-none');
+
+    btnCalcularProfundidad.addEventListener('click', function() {
+        agente.Profundidad();
+    })
     function mostrarFormOcultarCelda (){
         const form = document.querySelector('#form-esconder-celda');
         form.classList.toggle('d-none');

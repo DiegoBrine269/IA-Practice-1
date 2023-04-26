@@ -136,7 +136,7 @@ export class Mapa {
     getFinal = () => this.celdas.find(celda => celda.final === true);
 
     // Obtiene el conjunto de celdas que hayan sido visitadas
-    getVisitadas = () => this.celdas.filter(celda => celda.visitada === true);
+    getVisitadas = () => this.celdas.filter(celda => celda.visitado === true);
 
 
     // Compara dos arreglos

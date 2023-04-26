@@ -86,7 +86,7 @@ export class Agente {
         // Key antes de moverse
         const keyAnterior = Object.assign([], this.mapa.getActual().key);
         let celdaResultante;
-
+        let celda;
         // Celda de decisión
         let opcionesDeCamino = 0;
         if (this.sensar(0) !== undefined)
@@ -110,6 +110,7 @@ export class Agente {
                     key[0]--;
 
                 this.costoTotal += celdaResultante.costo;
+
                 break;
 
             case 1:
@@ -165,43 +166,145 @@ export class Agente {
 
         this.numMovimientos++;
     }
-    Anchura(){
-        const key=Object.assign([],this.mapa.getActual().key);
-        const final=this.mapa.getFinal();
-        let celda=this.mapa.celda(key);
-        for (let i=0;i<4;i++){
-            this.moverseBusqueda(i);
+    Anchura() {
 
-            for (let j=0;j<4;j++) {
-                    console.log("Sensado en la direccion", j, ":", this.sensar(j));
+        let inicial=this.mapa.getInicial();
+        let final=this.mapa.getFinal();
+        let cola=[];
+        let padres=new Map();
+        let visitados=new Set();
+        cola.push(inicial);
+        visitados.add(inicial);
+        padres.set(inicial,null);
+        while(cola.length>0){
 
+            let x=cola.shift();
+            visitados.add(x);
+            this.moverA(x.key);
+            if(this.mapa.getActual()===this.mapa.getFinal()){
+                console.log("Has encontrado el camino");
+                break;
+            }
+            if(this.sensar(0)!==undefined&&!visitados.has(this.sensar(0))){
+                cola.push(this.moverA(this.sensar(0).key));
+                this.moverA(x.key);
+            }
+            if(this.sensar(1)!==undefined&&!visitados.has(this.sensar(1))){
+                cola.push(this.moverA(this.sensar(1).key));
+                this.moverA(x.key);
+            }
+            if(this.sensar(2)!==undefined&&!visitados.has(this.sensar(2))){
+                cola.push(this.moverA(this.sensar(2).key));
+                this.moverA(x.key);
+            }
+            if(this.sensar(3)!==undefined&&!visitados.has(this.sensar(3))){
+                cola.push(this.moverA(this.sensar(3).key));
+                this.moverA(x.key);
             }
         }
 
     }
-    moverseBusqueda(direccion){
+    Profundidad(){
+        let inicial=this.mapa.getInicial();
+        let final=this.mapa.getFinal();
+        let cola=[];
+        let padres=new Map();
+        let visitados=new Set();
+        cola.push(inicial);
+        visitados.add(inicial);
+        padres.set(inicial,null);
+        while(cola.length>0){
+            debugger;
 
-        if (direccion===0){
+            let x=cola.shift();
+            visitados.add(x);
+            this.moverA(x.key);
+            if(this.mapa.getActual()===this.mapa.getFinal()){
+                console.log("Has encontrado el camino");
+                break;
+            }
+            else if(this.sensar(0)!==undefined&&!visitados.has(this.sensar(0))){
+                cola.push(this.moverA(this.sensar(0).key));
+                this.moverA(x.key);
+            }
+            else if(this.sensar(1)!==undefined&&!visitados.has(this.sensar(1))){
+                cola.push(this.moverA(this.sensar(1).key));
+                this.moverA(x.key);
+            }
+            else if(this.sensar(2)!==undefined&&!visitados.has(this.sensar(2))){
+                cola.push(this.moverA(this.sensar(2).key));
+                this.moverA(x.key);
+            }
+            else if(this.sensar(3)!==undefined&&!visitados.has(this.sensar(3))){
+                cola.push(this.moverA(this.sensar(3).key));
+                this.moverA(x.key);
+            }
+        }
+
+    }
+
+    moverA(celda){//Servira para dibujar el camino
+        this.mapa.setActual(celda);
+        let celdaResultante=this.mapa.getActual();
+        this.mapa.dibujar(canvas);
+        return celdaResultante;
+
+    }
+    moverseBusqueda(direccion){
+        let celda;
+//Usamos la función moverse, para que se pueda mover el agente sin necesidad de usar las flechas
+        if (direccion===0){//Arriba
             this.moverse(0);
             this.mapa.dibujar(canvas);
+            celda=this.mapa.getActual();
+            return celda;
         }
 
-        if (direccion===1){
+        if (direccion===1){//Derecha
             this.moverse(1);
             this.mapa.dibujar(canvas);
+            celda=this.mapa.getActual();
+            return celda;
         }
 
-        if (direccion===2){
+        if (direccion===2){//Abajo
             this.moverse(2);
             this.mapa.dibujar(canvas);
+            celda=this.mapa.getActual();
+            return celda;
         }
-        if (direccion===3){
+        if (direccion===3){//Izquierda
             this.moverse(3);
             this.mapa.dibujar(canvas);
+            celda=this.mapa.getActual();
+            return celda;
         }
     }
-/*No se ocupa, pero podria reciclarse algo
-    moverseBusqueda(direccion,celda) {
+    moverseproto2(direccion,celda){
+        if (direccion===0){//Arriba
+            this.moverse(0);
+            this.mapa.dibujar(canvas);
+            return celda;
+        }
+
+        if (direccion===1){//Derecha
+            this.moverse(1);
+            this.mapa.dibujar(canvas);
+            return celda;
+        }
+
+        if (direccion===2){//Abajo
+            this.moverse(2);
+            this.mapa.dibujar(canvas);
+            return celda;
+        }
+        if (direccion===3){//Izquierda
+            this.moverse(3);
+            this.mapa.dibujar(canvas);
+            return celda;
+        }
+    }
+    moverseProto(direccion,celda) {
 
         let celdaResultante;
         let filas=this.mapa.numFilas();
@@ -258,5 +361,5 @@ export class Agente {
                 break;
         }
     }
-*/
+
 }
