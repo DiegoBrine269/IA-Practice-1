@@ -1,5 +1,5 @@
 import {Mapa} from '../Mapa.js';
-
+import {Celda} from '../Celda.js';
 export class Agente { 
     constructor(nombre, color, matrizCosto) {
         this.nombre = nombre;
@@ -155,127 +155,128 @@ export class Agente {
     }
     // Búsqueda A*
     estrella(){
-        
-        // conjunto de nodos por explorar (Se agrega el inicial)
-        let nodosAbiertos = new Set([this.mapa.getInicial()]);
-        const destino = this.mapa.getFinal();
+        this.moverA(this.mapa.getFinal());
+    }
+    
+    moverA(objetivo) {
+        // Obtenemos la celda actual y el costo hasta ella
+     
+        let actual = this.mapa.getActual();
+        const costoActual = actual.value;
+        const celdaFinal = this.mapa.getFinal();
+        let evaluacion = [];
+        // Creamos una copia de la lista de celdas y la utilizamos como lista de celdas no visitadas
+        let mapa = this.mapa.celdas.slice();
 
-        // conjunto de nodos ya explorados
-        const cerrados = new Set();
-
-        const movimientos = new Set();
-        const ruta = new Set();
-        let distancias = [];
-        let sigCelda = {};
-        let actual;
+        // Creamos una lista de celdas por visitar, inicialmente solo contiene la celda actual
+        let nodosAbiertos = [actual];
+        let ruta = [];
+        // Creamos una lista de celdas ya visitadas, inicialmente vacía
+        let nodosCerrados = new Set();
+      
+        // Creamos una lista de costos desde la celda inicial hasta cada celda, inicialmente solo contiene el costo actual
+        let costoDesdeInicio = [costoActual];
+      
+        // Creamos una lista de costos estimados desde la celda actual hasta el objetivo
+        let costoEstimado = [this.mapa.getDistancia(actual, celdaFinal)];
+      
+        // Mientras haya celdas por visitar
+        while (evaluacion.key !== celdaFinal.key) {
+          // Seleccionamos la celda con el costo estimado más bajo
         
-        debugger;
-        // mientras hayan nodos por explorar
-        while (nodosAbiertos.size > 0) {
-            // encuentra el nodo con el costo f más bajo
-            if(actual == null)
-                for (const nodo of nodosAbiertos) {
-                    if (!actual || nodosAbiertos.valor < actual.valor) {
-                        actual = nodo;
+            const indiceActual = costoEstimado.indexOf(Math.min(...costoEstimado));
+            let celdaActual = nodosAbiertos[indiceActual];
+            const costoActual = costoDesdeInicio[indiceActual];
+            
+            // Si hemos llegado al objetivo, terminamos la búsqueda
+            if (actual.key[0] === celdaFinal.key[0] && actual.key[1] === celdaFinal.key[1]) {
+                console.log("LLEGAMOSSSSSSS");
+                return;
+            }
+            
+            // Eliminamos la celda actual de las listas por visitar y de costos
+            nodosAbiertos.splice(indiceActual, 1);
+            costoDesdeInicio.splice(indiceActual, 1);
+            costoEstimado.splice(indiceActual, 1);
+         
+            
+            // Añadimos la celda actual a las celdas visitadas
+            nodosCerrados.add(actual);
+            // Eliminamos la celda actual de la lista de celdas no visitadas
+            mapa = mapa.filter((celda) => celda.key[0] !== actual.key[0] || celda.key[1] !== actual.key[1]);
+            
+            // Para cada vecino de la celda actual
+            let vecinos = this.obtenerAdyacentes(actual.key);
+            for (let i = 0; i < vecinos.length; i++) {
+                const vecino = vecinos[i];
+                
+                
+                // Si el vecino ya fue visitado, lo ignoramos
+                if (nodosCerrados.has((celda) => celda.key[0] === vecino[0] && celda.key[1] === vecino[1])) {
+                continue;
+                }
+                // Calculamos el costo desde la celda inicial hasta el vecino
+                
+                evaluacion.h = parseInt(costoActual) + parseInt(this.mapa.celda(vecino.key).costo);
+                
+                // Recorre la copia del mapa y elimina celda actual 
+                for (let i = 0; i < mapa.length; i++) {
+                    if (mapa[i] === vecino) {
+                        nodosAbiertos.push(mapa[i]);
+                        ruta.push(mapa[i]);
+
+                        if(ruta.length > 1){
+                            debugger;
+                            evaluacion = this.obtenerMejorH(ruta);
+                            ruta.splice(i, 1);
+                            this.mapa.setActual(evaluacion.key);
+                            actual = evaluacion;
+                            console.log(ruta.key);
+                        }
+                        mapa.splice(i, 1); // elimina el elemento en la posición i
                     }
-                }
-            else
-                actual = nodosAbiertos.sigId;
-            
 
-            // si encontramos el nodo de destino, reconstruimos el camino
-            if (actual === destino) {
-                const camino = [actual];
-                while (actual.padre) {
-                    camino.push(actual.padre);
-                    actual = actual.padre;
-                }
-                camino.reverse();
-                return camino;
+                }   
             }
-            // for (let i = nodosAbiertos.length - 1; i >= 0; i--) {
-                //     if (nodosAbiertos[i] === actual.key) {
-                    //       nodosAbiertos.splice(i, 1);
-                    //     }
-                    //   }
-                    
-                    
-            // mueve el nodo actual del conjunto de nodosAbiertos al conjunto de cerrados
-            nodosAbiertos.delete(actual);
-            cerrados.add(actual);
-
-            // para cada nodo abierto
-            
-            // Sensar arriba    
-            if(this.sensar(0) != undefined){                    
-                nodosAbiertos.add(this.sensar(0));
-                distancias.push(this.rellenarH(this.sensar(0), destino));
-            }
-
-            // Sensar derecha
-            if(this.sensar(1) != undefined){                    
-                nodosAbiertos.add(this.sensar(1));
-                distancias.push(this.rellenarH(this.sensar(1), destino));
-            }
-
-            // Sensar abajo
-            if(this.sensar(2) != undefined){                    
-                nodosAbiertos.add(this.sensar(2));
-                distancias.push(this.rellenarH(this.sensar(2), destino));
-            }
-
-            // Sensar izquierda
-            if(this.sensar(3) != undefined){                    
-                nodosAbiertos.add(this.sensar(3));
-                distancias.push(this.rellenarH(this.sensar(3), destino));
-            }
-            
-            sigCelda.key = this.obtenerMejorEvaluacion(nodosAbiertos, distancias);
-            this.mapa.setActual(sigCelda.key[0]); 
         }
     }
 
-    // Distancia de una celda a la final
-    rellenarH(opcionDeCelda, celdaFinal){       
-        let distancia;   
-        distancia = this.mapa.getDistancia(opcionDeCelda, celdaFinal) + opcionDeCelda.costo;
-        return distancia;       
+    
+    obtenerAdyacentes(key) {
         
+        this.key = key;
+        let adyacentes = [];
+      
+        for(let counter = 0; counter < 4; counter++){            
+            if(this.sensar(counter) === undefined)
+                continue;
+            else{
+                // Agregar el adyacente a la lista de adyacentes
+                adyacentes.movimiento = counter;
+                adyacentes.push(this.sensar(counter));            
+            }
+        
+        }
+        
+        return adyacentes;
     }
-        
-        // De los nodos sensados, se selcciona el nodo con menor valor en H
-    obtenerMejorEvaluacion(nodos, h){
-        
-        // Comparar valores en nodos
+
+    obtenerMejorH(ruta){
         debugger;
-        let counter;
-        let menor = h[0];
-        
-        // for (const numero of nodos) {
-        //     if (numero < menor) {
-        //         menor = numero; // Actualiza el valor mínimo si el elemento actual es menor que el valor actual de 'min'
-        //     }
-        // }
-
-        // for (const elemento of nodos) {
-           
-        // } 
-        // 4,3,6,5
-        for(counter = 0; counter < nodos.size+1; counter++){
-            if(nodos.sigId == undefined){
-                nodos.sigId = this.sensar(counter);
-                nodos.movimiento = counter;
-                nodos.valor = h[counter];
-            
-                if(h[counter] < nodos.valor){
-                    nodos.sigId = this.sensar(counter);
-                    nodos.valor = h[counter];
-                    nodos.movimiento = counter;
+        let menorH = ruta[0];
+        menorH.h = menorH.costo + this.mapa.getDistancia(this.mapa.getActual(), this.mapa.getFinal());
+        ruta.forEach(element => element.h = element.costo + this.mapa.getDistancia(this.mapa.getActual(), this.mapa.getFinal()));
+        if(ruta.length !== 1){
+            for (let i = 1; i < ruta.length; i++) {
+                if (ruta[i].costo < menorH.costo) {
+                    menorH = ruta[i];
+                    menorH.h = menorH.costo + this.mapa.getDistancia(this.mapa,getActual(), this.mapa.getFinal());
+                    
                 }
             }
-        
+            return menorH;           
         }
-
-        return nodos;          
-    }         
+    }
 }
+
+
