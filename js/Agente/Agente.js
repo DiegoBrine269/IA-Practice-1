@@ -169,53 +169,69 @@ export class Agente {
     Anchura() {
 
         let inicial=this.mapa.getInicial();
-        let final=this.mapa.getFinal();
         let cola=[];
         let padres=new Map();
         let visitados=new Set();
         cola.push(inicial);
         visitados.add(inicial);
         padres.set(inicial,null);
+
         while(cola.length>0){
 
             let x=cola.shift();
             visitados.add(x);
             this.moverA(x.key);
+            let hijos=[];
             if(this.mapa.getActual()===this.mapa.getFinal()){
                 console.log("Has encontrado el camino");
                 break;
             }
             if(this.sensar(0)!==undefined&&!visitados.has(this.sensar(0))){
-                cola.push(this.moverA(this.sensar(0).key));
+                hijos.push(this.moverA(this.sensar(0).key));
                 this.moverA(x.key);
             }
             if(this.sensar(1)!==undefined&&!visitados.has(this.sensar(1))){
-                cola.push(this.moverA(this.sensar(1).key));
+                hijos.push(this.moverA(this.sensar(1).key));
                 this.moverA(x.key);
             }
             if(this.sensar(2)!==undefined&&!visitados.has(this.sensar(2))){
-                cola.push(this.moverA(this.sensar(2).key));
+
+                hijos.push(this.moverA(this.sensar(2).key));
                 this.moverA(x.key);
             }
             if(this.sensar(3)!==undefined&&!visitados.has(this.sensar(3))){
-                cola.push(this.moverA(this.sensar(3).key));
+                hijos.push(this.moverA(this.sensar(3).key));
                 this.moverA(x.key);
             }
+            for (let j=0;j<hijos.length;j++){
+                let hijo=hijos[j];
+                cola.push(hijo);
+                padres.set(hijo,x);
+
+            }
+
         }
+        debugger;
+        let nodoAct=this.mapa.getFinal();
+        let camino=[nodoAct];
+        while (nodoAct!==this.mapa.getInicial()){
+
+            nodoAct=padres.get(nodoAct);
+            camino.unshift(nodoAct);
+        }
+        console.log("El camino es : ",camino);
 
     }
     Profundidad(){
         let inicial=this.mapa.getInicial();
-        let final=this.mapa.getFinal();
         let cola=[];
         let padres=new Map();
         let visitados=new Set();
         cola.push(inicial);
         visitados.add(inicial);
         padres.set(inicial,null);
-        while(cola.length>0){
-            debugger;
 
+        while(cola.length>0){
             let x=cola.shift();
             visitados.add(x);
             this.moverA(x.key);
