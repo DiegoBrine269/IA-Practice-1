@@ -143,7 +143,8 @@ export class Mapa {
     equalsCheck = (a, b) => JSON.stringify(a) === JSON.stringify(b);   
 
     //Elimina todo el contenido del lienzo y redibuja en este básandose en la información guardada en los objetos
-    dibujar(canvas) {
+    dibujar() {
+        let canvas=document.querySelector('#lienzo');
         let ctx = canvas.getContext("2d");
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         ctx.beginPath();

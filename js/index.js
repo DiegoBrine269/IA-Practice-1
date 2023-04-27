@@ -144,13 +144,13 @@ function mostrarFormInfo(listaNumeros) {
         mostrarFormDetalles();
         
     });
-    
 
-    // Muestra el form para pedir la celda inicial, la celda final
+
+// Muestra el form para pedir la celda inicial, la celda final
     function mostrarFormDetalles() {
         const form = document.querySelector('#form-detalles');
         form.classList.toggle('d-none');
-        
+
         const selectCeldaInicial = document.querySelector('#celda-inicial');
         const selectCeldaFinal = document.querySelector('#celda-final');
 
@@ -158,18 +158,25 @@ function mostrarFormInfo(listaNumeros) {
         llenarSelect(selectCeldaFinal);
 
         form.addEventListener('submit', function(e) {
+
             e.preventDefault();
 
-            const keyInicial = [parseInt(selectCeldaInicial.value[0]), selectCeldaInicial.value[1]];
-            const keyFinal = [parseInt(selectCeldaFinal.value[0]), selectCeldaFinal.value[1]];
-            
+            const numFilaInicial = selectCeldaInicial.value.replace(/\D/g, '');
+            const letraColumnaInicial = selectCeldaInicial.value.replace(/[^a-z]/gi, '');
+
+            const numFilaFinal = selectCeldaFinal.value.replace(/\D/g, '');
+            const letraColumnaFinal = selectCeldaFinal.value.replace(/[^a-z]/gi, '');
+
+            const keyInicial = [parseInt(numFilaInicial), letraColumnaInicial];
+            const keyFinal = [parseInt(numFilaFinal), letraColumnaFinal];
+
             agente.mapa.setInicial(keyInicial);
             agente.mapa.setFinal(keyFinal);
             agente.mapa.setActual(keyInicial);
-            
+
             form.classList.toggle('d-none');
 
-            agente.mapa.dibujar(canvas);
+            agente.mapa.dibujar();
 
             mostrarFormOcultarCelda();
         });
@@ -203,7 +210,7 @@ function mostrarFormInfo(listaNumeros) {
             const key = [parseInt(selectCeldaOcultar.value[0]), selectCeldaOcultar.value[1]];
 
             agente.mapa.setInvisible(key);
-            agente.mapa.dibujar(canvas);
+            agente.mapa.dibujar();
 
         });
 
@@ -223,22 +230,22 @@ function mostrarFormInfo(listaNumeros) {
         // up arrow
         if (e.keyCode == '38') {
             agente.moverse(0);
-            agente.mapa.dibujar(canvas);
+            agente.mapa.dibujar();
         }
         // right arrow
         else if (e.keyCode == '39') {
             agente.moverse(1);
-            agente.mapa.dibujar(canvas);
+            agente.mapa.dibujar();
         }
         // down arrow
         else if (e.keyCode == '40') {
             agente.moverse(2);
-            agente.mapa.dibujar(canvas);
+            agente.mapa.dibujar();
         }
         // left arrow
         else if (e.keyCode == '37') {
             agente.moverse(3);
-            agente.mapa.dibujar(canvas);
+            agente.mapa.dibujar();
         }
 
         document.querySelector('#num-movs').innerText = agente.numMovimientos;
