@@ -69,10 +69,8 @@ export class Mapa {
 
     // Establece una celda como la actual
     setActual (key) {
-        // debugger;
         this.celdas.forEach((celda) => {            
             celda.actual = false;
-
             if(this.equalsCheck(celda.key, key))
                 celda.actual = true;
             

@@ -153,130 +153,82 @@ export class Agente {
 
         this.numMovimientos++;
     }
+
     // Búsqueda A*
     estrella(){
-        this.moverA(this.mapa.getFinal());
-    }
-    
-    moverA(objetivo) {
-        // Obtenemos la celda actual y el costo hasta ella
-     
-        let actual = this.mapa.getActual();
-        const costoActual = actual.value;
-        const celdaFinal = this.mapa.getFinal();
-        let evaluacion = [];
-        // Creamos una copia de la lista de celdas y la utilizamos como lista de celdas no visitadas
-        let mapa = this.mapa.celdas.slice();
-
-        // Creamos una lista de celdas por visitar, inicialmente solo contiene la celda actual
-        let nodosAbiertos = [actual];
-        let ruta = [];
-        // Creamos una lista de celdas ya visitadas, inicialmente vacía
-        let nodosCerrados = new Set();
-      
-        // Creamos una lista de costos desde la celda inicial hasta cada celda, inicialmente solo contiene el costo actual
-        let costoDesdeInicio = [costoActual];
-      
-        // Creamos una lista de costos estimados desde la celda actual hasta el objetivo
-        let costoEstimado = [this.mapa.getDistancia(actual, celdaFinal)];
-      
-        // Mientras haya celdas por visitar
-        while (evaluacion.key !== celdaFinal.key) {
-          // Seleccionamos la celda con el costo estimado más bajo
         
-            const indiceActual = costoEstimado.indexOf(Math.min(...costoEstimado));
-            let celdaActual = nodosAbiertos[indiceActual];
-            const costoActual = costoDesdeInicio[indiceActual];
-            
-            // Si hemos llegado al objetivo, terminamos la búsqueda
-            if (actual.key[0] === celdaFinal.key[0] && actual.key[1] === celdaFinal.key[1]) {
-                console.log("LLEGAMOSSSSSSS");
-                return;
-            }
-            
-            // Eliminamos la celda actual de las listas por visitar y de costos
-            nodosAbiertos.splice(indiceActual, 1);
-            costoDesdeInicio.splice(indiceActual, 1);
-            costoEstimado.splice(indiceActual, 1);
-         
-            
-            // Añadimos la celda actual a las celdas visitadas
-            nodosCerrados.add(actual);
-            // Eliminamos la celda actual de la lista de celdas no visitadas
-            mapa = mapa.filter((celda) => celda.key[0] !== actual.key[0] || celda.key[1] !== actual.key[1]);
-            
-            // Para cada vecino de la celda actual
-            let vecinos = this.obtenerAdyacentes(actual.key);
-            for (let i = 0; i < vecinos.length; i++) {
-                const vecino = vecinos[i];
-                
-                
-                // Si el vecino ya fue visitado, lo ignoramos
-                if (nodosCerrados.has((celda) => celda.key[0] === vecino[0] && celda.key[1] === vecino[1])) {
-                continue;
-                }
-                // Calculamos el costo desde la celda inicial hasta el vecino
-                
-                evaluacion.h = parseInt(costoActual) + parseInt(this.mapa.celda(vecino.key).costo);
-                
-                // Recorre la copia del mapa y elimina celda actual 
-                for (let i = 0; i < mapa.length; i++) {
-                    if (mapa[i] === vecino) {
-                        nodosAbiertos.push(mapa[i]);
-                        ruta.push(mapa[i]);
+        // Conjuntos de abiertos y cerrados
+        let conjuntoAbiertos = [];
+        let conjuntoCerrados = new Set();
+        let camino = new Set();
+        // Nodos
+        let inicial = this.mapa.getInicial();
+        let celdaActual = this.mapa.getActual();
+        let celdaFinal = this.mapa.getFinal();
+        let mejorCelda = celdaActual;
 
-                        if(ruta.length > 1){
-                            debugger;
-                            evaluacion = this.obtenerMejorH(ruta);
-                            ruta.splice(i, 1);
-                            this.mapa.setActual(evaluacion.key);
-                            actual = evaluacion;
-                            console.log(ruta.key);
-                        }
-                        mapa.splice(i, 1); // elimina el elemento en la posición i
-                    }
-
-                }   
-            }
-        }
-    }
-
-    
-    obtenerAdyacentes(key) {
         
-        this.key = key;
-        let adyacentes = [];
-      
-        for(let counter = 0; counter < 4; counter++){            
-            if(this.sensar(counter) === undefined)
-                continue;
-            else{
-                // Agregar el adyacente a la lista de adyacentes
-                adyacentes.movimiento = counter;
-                adyacentes.push(this.sensar(counter));            
-            }
+        // Insertar nodo inicial en conjunto de abiertos
+        conjuntoAbiertos.push(inicial); 
         
-        }
-        
-        return adyacentes;
-    }
-
-    obtenerMejorH(ruta){
-        debugger;
-        let menorH = ruta[0];
-        menorH.h = menorH.costo + this.mapa.getDistancia(this.mapa.getActual(), this.mapa.getFinal());
-        ruta.forEach(element => element.h = element.costo + this.mapa.getDistancia(this.mapa.getActual(), this.mapa.getFinal()));
-        if(ruta.length !== 1){
-            for (let i = 1; i < ruta.length; i++) {
-                if (ruta[i].costo < menorH.costo) {
-                    menorH = ruta[i];
-                    menorH.h = menorH.costo + this.mapa.getDistancia(this.mapa,getActual(), this.mapa.getFinal());
+        while(mejorCelda.key !== celdaFinal.key){
+            
+            for(let index=0; index<4; index++){
+                // Revisar si no tiene hijos
+                if(this.sensar(0) === undefined && this.sensar(1) === undefined && this.sensar(2) === undefined && this.sensar(3) === undefined){
+                    conjuntoCerrados.add(this.mapa.getActual());
                     
+                }else{
+                    // Agregando hijos a conjunto de abiertos
+                    if(this.sensar(index) === undefined)
+                        continue;
+                    else{
+                        // Además, si la celda sensada pertenece al conjunto de cerrados, la omite
+                        if(conjuntoCerrados.has(this.sensar(index)))
+                            continue;
+                        
+                        conjuntoAbiertos.push(this.sensar(index));
+                    }
                 }
-            }
-            return menorH;           
+            } 
+
+            // Eliminando celda actual del conunto abiertos
+            const i = conjuntoAbiertos.findIndex(celda => celda.key === mejorCelda.key);
+            if (i !== -1)
+                conjuntoAbiertos.splice(i, 1);
+
+            // Agregando distancia  y h, desde celda sensada a celda final
+            conjuntoAbiertos.forEach((celda) => {
+                celda.d = this.mapa.getDistancia(celda, celdaFinal);
+                celda.h = this.obtenerCosto(celda.value) + celda.d;   
+            });            
+            
+            // Cerrando el nodo actual
+            conjuntoCerrados.add(this.mapa.getActual());
+
+            // encontrar la celda con el menor costo heurístico en el conjunto de abiertos
+            mejorCelda = conjuntoAbiertos.sort((a, b) => a.h - b.h)[0];
+            camino.add(mejorCelda);
+
+            this.mapa.setActual(mejorCelda.key);
         }
+
+        // Agregando final a conjunto de cerrados y ruta
+        conjuntoCerrados.add(mejorCelda);
+        camino.add(mejorCelda);
+
+        let rutaOptima = Array.from(camino).reverse();
+        // let rutaOptima = this.obtenerRutaOptima(camino, celdaFinal);
+
+        rutaOptima.forEach((celda) => console.log(celda.key));
+
     }
+
+    obtenerCosto(value){
+        let costo = this.matrizCosto[value];
+        return costo;
+    }    
+    // -----------------------------------------------------------------------------------------------------
 }
 
 
