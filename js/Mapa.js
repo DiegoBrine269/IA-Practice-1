@@ -203,6 +203,74 @@ export class Mapa {
         ctx.stroke();
     }
 
+    dibujar(mapa2) {
+        let canvas = document.querySelector('#lienzo');
+        let ctx = canvas.getContext("2d");
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.beginPath();
+        
+        ctx.fillStyle = '#000000';
+        ctx.font = "30px Arial";
+        ctx.textAlign = "center";
+
+        const numFilas = this.numFilas();
+        const numCols = this.numCols();
+
+        let tamano = 50;
+        let mitad = tamano / 2;
+
+        // Dibujando el perímetro vertical que indica el número de fila 
+        for(let i=1; i<=numFilas; i++) {
+            ctx.rect(0, tamano, tamano, tamano*i);
+            ctx.fillText(i, 25, tamano*(i+1)-15 );
+        };
+
+        // Dibujando el perímetro horizontal que indica la letra de la columna 
+        let letraColumna = 'A';
+        for(let i=1; i<=numCols; i++) {
+            ctx.rect(tamano, 0, tamano*i, tamano);
+            ctx.fillText(letraColumna, tamano*(i+1)-25, 35 );
+            letraColumna = String.fromCharCode(letraColumna.charCodeAt(0) + 1);
+        };
+
+        // Dibujando celda por celda
+        this.celdas.map((celda, index) => {
+            const numCol = celda.key[1].charCodeAt(0) - 64;
+            const numFila = celda.key[0];
+            ctx.fillStyle = celda.invisible === true ? '#000000' : celda.color;
+            ctx.fillRect(tamano*numCol, tamano*numFila, tamano, tamano);
+            ctx.font = "20px Arial";
+            ctx.fillStyle = '#A8A8A8';
+
+            if(celda.inicial || mapa2.celdas[index].inicial)
+                ctx.fillText("I", tamano*numCol+3, tamano*numFila+25);
+            if(celda.final || mapa2.celdas[index].final)
+                ctx.fillText("F", tamano*numCol+10, tamano*numFila+25);
+            if(celda.visitado || mapa2.celdas[index].visitado)
+                ctx.fillText("V", tamano*numCol+20, tamano*numFila+25);
+            if(celda.actual){
+                ctx.fillText("X", tamano*numCol+31, tamano*numFila+25);
+                ctx.fillStyle = this.colorAgente;
+                ctx.beginPath();
+                ctx.arc(tamano*numCol+mitad, tamano*numFila+mitad, 10, 0, 2 * Math.PI);
+                ctx.closePath();
+                ctx.fill();
+            }
+            if(mapa2.celdas[index].inicial){
+                ctx.fillText("X", tamano*numCol+31, tamano*numFila+25);
+                ctx.fillStyle = mapa2.colorAgente;
+                ctx.beginPath();
+                ctx.arc(tamano*numCol+mitad, tamano*numFila+mitad, 10, 0, 2 * Math.PI);
+                ctx.closePath();
+                ctx.fill();
+            }
+            if(celda.decision || mapa2.celdas[index].decision)
+                ctx.fillText("O", tamano*numCol+44, tamano*numFila+25);
+        });
+
+        ctx.stroke();
+    }
+
     invertHex(hex) {
         return (Number(hex) ^ 0xFFFFFF).toString(16).substr(1).toUpperCase()
     }
